@@ -3,6 +3,19 @@ name: Build Armbian momo slim
 on:
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      armbian_board:
+        description: "Target board family"
+        required: true
+        default: "s905l3a"
+        type: choice
+        options:
+          - s905l3a
+          - s905l3b
+      armbian_kernel:
+        description: "Kernel version (L3A: 6.12.114 / L3B: 6.18.63)"
+        required: true
+        default: "6.12.114"
 
 env:
   REPO_URL: https://github.com/armbian/build
@@ -23,6 +36,9 @@ jobs:
           sudo apt-get clean
           df -h
 
+      - name: Setup QEMU binfmt (ARM64 emulation for cross-build)
+        run: docker run --privileged --rm tonistiigi/binfmt --install arm64
+
       - name: Build Armbian rootfs
         run: |
           git clone --depth 1 ${REPO_URL} -b ${REPO_BRANCH}
@@ -36,8 +52,8 @@ jobs:
         with:
           build_target: armbian
           armbian_path: build/output/images/*.img.gz
-          armbian_board: s905l3a
-          armbian_kernel: 6.12.114
+          armbian_board: ${{ inputs.armbian_board }}
+          armbian_kernel: ${{ inputs.armbian_kernel }}
           armbian_files: files
           armbian_fstype: ext4
           armbian_edition: server
@@ -49,5 +65,5 @@ jobs:
         with:
           artifacts: "output/*.img.gz"
           allowUpdates: true
-          tag: Armbian_momo_slim_bookworm_r${{ github.run_number }}
+          tag: Armbian_momo_slim_${{ inputs.armbian_board }}_${{ inputs.armbian_kernel }}
           token: ${{ secrets.GITHUB_TOKEN }}
