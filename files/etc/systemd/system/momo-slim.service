@@ -1,0 +1,10 @@
+[Unit]
+Description=Momo slim firstboot (auto-trim firmware/doc/toolchain)
+ConditionPathExists=!/var/lib/momo-slim.done
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/usr/local/bin/momo-slim.sh && mkdir -p /var/lib && touch /var/lib/momo-slim.done'
+
+[Install]
+WantedBy=multi-user.target
