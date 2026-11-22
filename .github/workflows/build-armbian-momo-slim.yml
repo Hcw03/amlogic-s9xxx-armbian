@@ -1,0 +1,53 @@
+name: Build Armbian momo slim
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/armbian/build
+  REPO_BRANCH: main
+  BOARD: odroidn2
+  RELEASE: bookworm
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
+          sudo apt-get clean
+          df -h
+
+      - name: Build Armbian rootfs
+        run: |
+          git clone --depth 1 ${REPO_URL} -b ${REPO_BRANCH}
+          cd build/
+          ./compile.sh RELEASE=${RELEASE} BOARD=${BOARD} BRANCH=current BUILD_MINIMAL=no \
+                        BUILD_ONLY=default HOST=armbian BUILD_DESKTOP=no EXPERT=yes KERNEL_CONFIGURE=no \
+                        COMPRESS_OUTPUTIMAGE="sha,gzi" SHARE_LOG=yes
+
+      - name: Rebuild Armbian
+        uses: ophub/amlogic-s9xxx-armbian@main
+        with:
+          build_target: armbian
+          armbian_path: build/output/images/*.img.gz
+          armbian_board: s905l3a
+          armbian_kernel: 6.12.114
+          armbian_files: files
+          armbian_fstype: ext4
+          armbian_edition: server
+          builder_name: momo
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "output/*.img.gz"
+          allowUpdates: true
+          tag: Armbian_momo_slim_bookworm_r${{ github.run_number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
