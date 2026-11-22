@@ -1,0 +1,20 @@
+# E900V22C(S905L3AB) 精简屏蔽 —— Momo 刷机工具箱 2026-11-23
+# 作用：apt 升级时永不回装以下已裁剪内容
+# 适用：Amlogic S905L3A 盒子（创维E900V22C/22D、M401A等），仅用有线网络
+path-exclude=/lib/firmware/qcom/*
+path-exclude=/lib/firmware/i915/*
+path-exclude=/lib/firmware/amdgpu/*
+path-exclude=/lib/firmware/radeon/*
+path-exclude=/lib/firmware/nvidia/*
+path-exclude=/lib/firmware/ath11k/*
+path-exclude=/lib/firmware/ath10k/*
+path-exclude=/lib/firmware/iwlwifi/*
+path-exclude=/lib/firmware/mediatek/*
+path-exclude=/lib/firmware/mrvl/*
+path-exclude=/lib/firmware/rkwifi/*
+path-exclude=/lib/firmware/ath12k/*
+path-exclude=/lib/firmware/intel/*
+path-exclude=/lib/firmware/qca/*
+path-exclude=/usr/share/doc/*
+path-exclude=/usr/share/man/*
+path-exclude=/usr/share/locale/*
