@@ -486,6 +486,7 @@ jobs:
           kernel_usage: ${{ inputs.kernel_usage }}
           armbian_fstype: ${{ inputs.armbian_fstype }}
           builder_name: ${{ inputs.builder_name }}
+          armbian_files: files
 
       - name: Upload Armbian images to Release
         uses: ophub/upload-to-releases@main
